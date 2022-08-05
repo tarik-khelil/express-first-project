@@ -1,24 +1,29 @@
-const http = require('http')
+const http = require('http');
+const path=require('path');
 
-const express = require('express')
+const express = require('express');
+const bodyParser = require('body-parser');
+
+const adminRoutes = require('./routes/admin');
+const shopRoutes = require('./routes/shop')
+
 
 //create express app
 const app = express();
-//use allow us to add a new middleware function
-app.use((req, res, next) => {
-    console.log('in the middleware!');
-    next(); //allow the request to continue to the  middleware in line
-    //if newt is not callad we should return a response 
+
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/admin',adminRoutes);
+app.use(shopRoutes);  
+
+app.use((req,res,next)=>{
+    res.status(404).sendFile(path.join(__dirname,'views','404.html'))
+})
 
 
-});
-
-app.use((req, res, next) => {
-    console.log('in another middleware!');
-    //send() sending a response
-    res.send('<h1>Hello from Express</h1>')
-
-});
 
 //create server
 
@@ -26,4 +31,4 @@ app.use((req, res, next) => {
 // server.listen(3000)
 
 //or directly with express
- app.listen(3000)
+app.listen(3000)
