@@ -3,7 +3,6 @@ const path = require('path');
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const expressHbs = require('express-handlebars')
 
 const adminData = require('./routes/admin');
 const shopRoutes = require('./routes/shop')
@@ -12,15 +11,7 @@ const shopRoutes = require('./routes/shop')
 //create express app
 const app = express();
 
-app.engine(
-    'hbs',
-    expressHbs.engine({
-      layoutsDir: 'views/layouts/',
-      defaultLayout: 'main-layout',
-      extname: 'hbs'
-    })
-  );
-app.set('view engine', 'hbs');//permet a express de savoir quand utilise templage engine de type pug
+app.set('view engine', 'ejs');//permet a express de savoir quand utilise templage engine de type pug
 app.set('views', 'views');//permet a angulare de savoir le chemin de nos views
 app.use(bodyParser.urlencoded({
     extended: false
