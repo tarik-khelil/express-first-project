@@ -4,10 +4,12 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const  errorController=require('./controllers/error')
+const errorController = require('./controllers/error')
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop')
+
+const db = require("./util/database");
 
 
 //create express app
@@ -18,6 +20,15 @@ app.set('views', 'views');//permet a angulare de savoir le chemin de nos views
 app.use(bodyParser.urlencoded({
     extended: false
 }));
+
+// db.execute('SELECT * FROM products')
+//     .then(res => {
+//         console.log(res[0]);
+//     })
+//     .catch(err => {
+//         console.log(err);
+//     })
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/admin', adminRoutes);

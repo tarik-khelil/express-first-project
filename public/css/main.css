@@ -163,10 +163,13 @@ form {
 
 .card__image {
   width: 100%;
+  text-align: center;
 }
 
 .card__image img {
-  width: 100%;
+  max-width: 150px;
+  min-width: 150px;
+  
 }
 
 .card__actions {
