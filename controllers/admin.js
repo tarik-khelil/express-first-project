@@ -1,4 +1,6 @@
 const Product = require('../models/product')
+const mongodb = require('mongodb');
+
 
 const getAddProduct = (req, res, next) => {
     res.render('admin/edit-product', {
@@ -12,55 +14,74 @@ const postAddProduct = (req, res, next) => {
     const { title, imageUrl, price, description } = req.body
 
     const p = new Product(null, title, imageUrl, description, price);
-    p.save();
-    res.redirect('/');
+    p.save()
+        .then(result => {
+            res.redirect('/admin/products');
+        })
+        .catch(err => console.log(err))
+
 
 }
+
 const getEditProduct = (req, res, next) => {
     const editMode = req.query.edit;
     if (!editMode) {
         res.redirect('/')
     }
     const productId = req.params.productId;
-    Product.findById(productId, (product) => {
-        if (!product) {
-            return res.redirect('/');
+    Product.findById(productId)
+        .then(product => {
+            if (!product) {
+                return res.redirect('/');
 
-        }
-        res.render('admin/edit-product', {
-            pageTitle: 'edit Product',
-            path: '/admin/edit-product',
-            editing: editMode,
-            product
-        });
-    })
+            }
+            res.render('admin/edit-product', {
+                pageTitle: 'edit Product',
+                path: '/admin/edit-product',
+                editing: editMode,
+                product
+            });
+        })
+        .catch(err => console.log(err))
 }
 
 const postEditProduct = (req, res, next) => {
+    console.log('body', req.body)
+
     const { prodId, title, imageUrl, price, description } = req.body
-
-    const p = new Product(prodId, title, imageUrl, description, price);
-    p.save();
-    res.redirect('/');
-
-
-}
-const getProducts = (req, res, next) => {
-    Product.fetchAll((products) => {
-        res.render('admin/products', {
-            prods: products,
-            pageTitle: 'Admin products',
-            path: '/admin/products',
-
+    const p = new Product(new mongodb.ObjectId(prodId), title, imageUrl, description, price);
+    p.save()
+        .then(result => {
+            console.log("updated success")
+            res.redirect('/admin/products');
         })
-    })
+        .catch(err => console.log(err))
+
+
+
 }
 
-const deleteProduct=(req,res,next)=>{
-    const productId=req.body.productId
+const getProducts = (req, res, next) => {
+    Product.fetchAll()
+        .then(products => {
+            res.render('admin/products', {
+                prods: products,
+                pageTitle: 'Admin products',
+                path: '/admin/products',
+
+            })
+        })
+}
+
+const deleteProduct = (req, res, next) => {
+    const productId = req.body.productId
 
     Product.deleteProduct(productId)
-    res.redirect('/admin/products');
+        .then(result => {
+            res.redirect('/admin/products');
+        })
+        .catch(err => console.log(err));
+
 
 }
 
@@ -69,4 +90,4 @@ exports.postAddProduct = postAddProduct;
 exports.getProducts = getProducts;
 exports.getEditProduct = getEditProduct;
 exports.postEditProduct = postEditProduct;
-exports.deleteProduct=deleteProduct;
+exports.deleteProduct = deleteProduct;

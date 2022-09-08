@@ -1,13 +1,15 @@
 const http = require('http');
 const path = require('path');
 
+const {mongoConnect}=require('./util/database')
+
 const express = require('express');
 const bodyParser = require('body-parser');
 
 const  errorController=require('./controllers/error')
 
 const adminRoutes = require('./routes/admin');
-const shopRoutes = require('./routes/shop')
+const shopRoutes = require('./routes/shop');
 
 
 //create express app
@@ -26,11 +28,13 @@ app.use(shopRoutes);
 app.use(errorController.get404)
 
 
-
+mongoConnect(client=>{
+    app.listen(3000)
+})
 //create server
 
 // const server = http.createServer(app)
 // server.listen(3000)
 
 //or directly with express
-app.listen(3000)
+//app.listen(3000)
