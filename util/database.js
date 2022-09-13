@@ -5,7 +5,6 @@ const mongoClient = mongodb.MongoClient;
 let _db;
 
 const mongoConnect = (calback) => {
-    console.log('ici')
     mongoClient.connect('mongodb+srv://tarik:chelsea95@cluster0.ghdxnkk.mongodb.net/?retryWrites=true&w=majority')
         .then(res => {
             _db = res.db();
@@ -18,7 +17,7 @@ const getDb = () => {
     if (_db) {
         return _db;
     }
-    return  'Parameter is not a number!';
+    return 'Parameter is not a number!';
 }
 
 exports.mongoConnect = mongoConnect;

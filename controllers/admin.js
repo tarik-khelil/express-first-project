@@ -12,15 +12,12 @@ const getAddProduct = (req, res, next) => {
 
 const postAddProduct = (req, res, next) => {
     const { title, imageUrl, price, description } = req.body
-
-    const p = new Product(null, title, imageUrl, description, price);
+    const p = new Product(null, title, imageUrl, description, price,req.user._id);
     p.save()
         .then(result => {
             res.redirect('/admin/products');
         })
         .catch(err => console.log(err))
-
-
 }
 
 const getEditProduct = (req, res, next) => {
@@ -46,8 +43,6 @@ const getEditProduct = (req, res, next) => {
 }
 
 const postEditProduct = (req, res, next) => {
-    console.log('body', req.body)
-
     const { prodId, title, imageUrl, price, description } = req.body
     const p = new Product(new mongodb.ObjectId(prodId), title, imageUrl, description, price);
     p.save()

@@ -16,7 +16,6 @@ const getProduct = (req, res, next) => {
     const productId = req.params.productId;
     Product.findById(productId)
         .then(product => {
-
             res.render("shop/product-detail", {
                 product: product,
                 path: "/prodcuts",
@@ -78,11 +77,16 @@ const getOrdres = (req, res, next) => {
 
 const postCart = (req, res, next) => {
     const productId = req.body.productId;
-    Product.findById(productId, (product) => {
-        Cart.addProduct(productId, product.price)
-    })
+    Product.findById(productId)
+        .then(product => {
+            return req.user.addToCart(product)
+        })
+        .then(result=>{
+            console.log(result)
+        })
 
-    res.redirect("/cart")
+
+
 }
 
 postCardDeleteProduct = (req, res, nex) => {
