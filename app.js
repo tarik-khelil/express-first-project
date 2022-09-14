@@ -1,7 +1,7 @@
 const http = require('http');
 const path = require('path');
 
-const { mongoConnect } = require('./util/database')
+const { connectToMongoose } = require('./util/database')
 const mongodb = require("mongodb");
 
 const express = require('express');
@@ -27,12 +27,12 @@ app.use(bodyParser.urlencoded({
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
-    User.findById("6319b3389e21dc9ab2502106")
+    User.findById("6320570c365690d10f9ccff3")
         .then(user => {
-            req.user = new User(user.name,user.email,user.cart,user._id);
+            req.user = user;
         })
         .catch(err => console.log(err))
-        .finally(() => {next()});
+        .finally(() => { next() });
 })
 
 app.use('/admin', adminRoutes);
@@ -42,10 +42,29 @@ app.use(errorController.get404)
 
 
 
-mongoConnect(client => {
+connectToMongoose()
+    .then(res => {
+        User.findOne().then(u=>{
+            if(!u){
+                const user = new User({
+                    name: "Tarik",
+                    email: "tarik@gmail.com",
+                    cart: {
+                        items: [],
+                    }
+        
+                })
+                user.save();
+            }
+        })
+      
+        app.listen(3000)
 
-    app.listen(3000)
-})
+    })
+    .catch(err => {
+        console.log(err)
+
+    })
 //create server
 
 // const server = http.createServer(app)

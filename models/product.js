@@ -1,51 +1,33 @@
+const mongoose=require('mongoose')
 
-const { getDb } = require('../util/database');
-const mongodb = require('mongodb');
+const Schema=mongoose.Schema;
 
-class Product {
-    constructor(id, title, imageUrl, description, price, userId) {
-        this.title = title;
-        this.imageUrl = imageUrl,
-            this.description = description,
-            this.price = price,
-            this._id = id,
-            this.userId = userId
-    }
-    save() {
-        const db = getDb();
-        let dbOp;
-        if (this._id) {
-            //update
 
-            dbOp = db.collection('products').updateOne({ _id: new mongodb.ObjectId(this._id) },
-                { $set: this })
 
-        } else {
-            //add
-            dbOp = db.collection('products').insertOne(this)
-
-        }
-        return dbOp.then(res => {
-         
-            return res
-        })
-            .catch(err => console.log(err));
-
+const productShema=new Schema({
+    title:{
+        type:String,
+        required:true
+    },
+    price:{
+        type:Number,
+        required:true
+    },
+    description:{
+        type:String,
+        required:true
+    },
+    imageUrl:{
+        type:String,
+        required:true
+    },
+    userId:{
+        type:Schema.Types.ObjectId,
+        required:true,
+        ref:'user',// (refer to user model )tell mongoose hey which other mongoose model is actyually realted to the data in that feild
     }
 
-    static fetchAll() {
-        const db = getDb();
-        return db.collection('products').find().toArray()
+})
 
-    }
-    static findById(id) {
-        const db = getDb();
-        return db.collection('products').findOne({ _id: new mongodb.ObjectId(id) })
-    }
-    static deleteProduct = (id) => {
-        const db = getDb();
-        return db.collection('products').deleteOne({ _id: new mongodb.ObjectId(id) })
-    }
-}
+module.exports=mongoose.model('Product',productShema); // methode 1 to define model 
 
-module.exports = Product

@@ -12,8 +12,8 @@ const getAddProduct = (req, res, next) => {
 
 const postAddProduct = (req, res, next) => {
     const { title, imageUrl, price, description } = req.body
-    const p = new Product(null, title, imageUrl, description, price,req.user._id);
-    p.save()
+    const p = new Product({ title, imageUrl, description, price,userId: req.user._id});
+    p.save() //save methode from mongoose
         .then(result => {
             res.redirect('/admin/products');
         })
@@ -44,8 +44,14 @@ const getEditProduct = (req, res, next) => {
 
 const postEditProduct = (req, res, next) => {
     const { prodId, title, imageUrl, price, description } = req.body
-    const p = new Product(new mongodb.ObjectId(prodId), title, imageUrl, description, price);
-    p.save()
+    Product.findById(prodId)
+        .then(p => {
+             p.title = title,
+                p.description = description,
+                p.imageUrl = imageUrl,
+                p.price = price
+            return p.save()
+        })
         .then(result => {
             console.log("updated success")
             res.redirect('/admin/products');
@@ -57,8 +63,11 @@ const postEditProduct = (req, res, next) => {
 }
 
 const getProducts = (req, res, next) => {
-    Product.fetchAll()
+    Product.find()
+    //.select('title price -_id')// reupérer que les info selectionner  (-permet d'exclure le field) 
+   // .populate('userId','name email') //nous donne tt les informations du user pas que l'id, et on peuc selection les field comme 2 eme arguments 
         .then(products => {
+            console.log(products)
             res.render('admin/products', {
                 prods: products,
                 pageTitle: 'Admin products',
@@ -71,7 +80,7 @@ const getProducts = (req, res, next) => {
 const deleteProduct = (req, res, next) => {
     const productId = req.body.productId
 
-    Product.deleteProduct(productId)
+    Product.findByIdAndRemove(productId)
         .then(result => {
             res.redirect('/admin/products');
         })
