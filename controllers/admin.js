@@ -3,14 +3,19 @@ const mongodb = require('mongodb');
 
 
 const getAddProduct = (req, res, next) => {
+    const isLoggedIn = req.session.isLoggedIn
+
     res.render('admin/edit-product', {
         pageTitle: 'Add Product',
         path: '/admin/add-product',
         editing: false,
+        isAuthenticated: isLoggedIn
+
     });
 }
 
 const postAddProduct = (req, res, next) => {
+    const isLoggedIn = req.session.isLoggedIn
     const { title, imageUrl, price, description } = req.body
     const p = new Product({ title, imageUrl, description, price,userId: req.user._id});
     p.save() //save methode from mongoose
@@ -26,6 +31,7 @@ const getEditProduct = (req, res, next) => {
         res.redirect('/')
     }
     const productId = req.params.productId;
+    const isLoggedIn = req.session.isLoggedIn
     Product.findById(productId)
         .then(product => {
             if (!product) {
@@ -36,7 +42,8 @@ const getEditProduct = (req, res, next) => {
                 pageTitle: 'edit Product',
                 path: '/admin/edit-product',
                 editing: editMode,
-                product
+                product,
+                isAuthenticated:isLoggedIn
             });
         })
         .catch(err => console.log(err))
@@ -63,6 +70,7 @@ const postEditProduct = (req, res, next) => {
 }
 
 const getProducts = (req, res, next) => {
+    const isLoggedIn = req.session.isLoggedIn
     Product.find()
     //.select('title price -_id')// reupérer que les info selectionner  (-permet d'exclure le field) 
    // .populate('userId','name email') //nous donne tt les informations du user pas que l'id, et on peuc selection les field comme 2 eme arguments 
@@ -72,6 +80,7 @@ const getProducts = (req, res, next) => {
                 prods: products,
                 pageTitle: 'Admin products',
                 path: '/admin/products',
+                isAuthenticated:isLoggedIn
 
             })
         })
